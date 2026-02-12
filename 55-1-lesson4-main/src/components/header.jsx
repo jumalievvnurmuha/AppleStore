@@ -1,13 +1,19 @@
 import {useAuth} from '../store/use-auth'
 import {Button} from 'react-bootstrap'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useLocation} from 'react-router-dom'
 import {useProducts} from '../store/use-products.js'
 import {ShoppingCart, User} from 'lucide-react'
+import { useState } from 'react'
+import {Basket} from './basket.jsx'
 
 
 export function Header() {
 	const logout = useAuth(state => state.logout)
     const isAuth = useAuth(state => state.isAuth)
+
+    const [showBasket, setShowBasket] = useState(false);
+
+    const location = useLocation()
 
     const {search, setSearch} = useProducts()
 
@@ -21,6 +27,13 @@ export function Header() {
             navigate('/login')
         }
     }
+    if(location.pathname === '/login' || location.pathname === '/register') {
+        return null
+    }
+
+    
+
+
 
 
 	return (
@@ -33,11 +46,13 @@ export function Header() {
                     {isAuth ? 'Выйти' : 'Войти'}
                 </Button>
 
-                <Button className='d-flex align-items-center gap-1'>
+            {isAuth && (<Button className='d-flex align-items-center gap-1' onClick={() => setShowBasket(true)}>
                     <ShoppingCart size={20} />
                     Корзина
-                </Button>
+                </Button>)}
             </div>
+
+            <Basket show = {showBasket} handleClose={() => setShowBasket(false)} placement = 'end'/>
 		</header>
 	)
 }

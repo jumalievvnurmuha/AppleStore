@@ -3,12 +3,15 @@ import {useParams} from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import {$mainApi} from '../api/requester.js'
+import {ShoppingCart} from 'lucide-react'
+import {useBasket} from '../store/use-basket'
 
 export function Product() {
     const {id} = useParams()
     const [product, setProduct] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
+    const addToBasket = useBasket((state) => state.addToBasket)
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -44,6 +47,17 @@ export function Product() {
         return <div>Product not found</div>
     }
 
+    const handleAddToBasket = () => {
+        addToBasket({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            year: product.year,
+            picture: product.picture,
+            description: product.description,
+        })
+    }
+
     return (
         <Card className='my-4'>
             <Card.Img className='product-image' variant='top' src={product.picture} />
@@ -52,9 +66,18 @@ export function Product() {
                 <Card.Text>{product.description}</Card.Text>
                 <p>{product.price}</p>
                 <p>{product.year}</p>
-                <Button variant='secondary' onClick={() => window.history.back()}>
-                    Back
-                </Button>
+                <div className='d-flex gap-2'>
+                    <Button variant='secondary' onClick={() => window.history.back()}>
+                        Back
+                    </Button>
+                    <Button
+                        variant='outline-primary'
+                        onClick={handleAddToBasket}
+                        aria-label='Добавить в корзину'
+                    >
+                        <ShoppingCart size={18} />
+                    </Button>
+                </div>
             </Card.Body>
         </Card>
     )

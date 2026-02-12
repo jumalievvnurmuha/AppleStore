@@ -9,11 +9,11 @@ export const useProducts = create((set) => ({
     search: '',
     setSearch: (text) => set({ search: text }),
 
-    fetchProducts: async ({ search = '' }) => {
+    fetchProducts: async (params) => {
         set({ isLoading: true, error: null })
 
         try {
-            const {data} = await $mainApi.get(`/products`)
+            const {data} = await $mainApi.get(`/products`, {params})
             set({ products: data })
         }
         catch (e) {
