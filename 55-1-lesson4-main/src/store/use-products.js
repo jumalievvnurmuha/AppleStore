@@ -1,27 +1,58 @@
-import {create} from 'zustand'
+﻿import {useQuery, useQueryClient} from '@tanstack/react-query'
 import {$mainApi} from '../api/requester.js'
 
-export const useProducts = create((set) => ({
-    products: [],
-    isLoading: false,
-    error: null,
+const SEARCH_QUERY_KEY = ['products', 'search']
+const PRODUCTS_QUERY_KEY = (search) => ['products', search || '']
+const PRODUCT_QUERY_KEY = (id) => ['product', id]
 
-    search: '',
-    setSearch: (text) => set({ search: text }),
+const fetchProducts = async (search) => {
+    const params = search ? {name: `*${search}`} : undefined
+    const {data} = await $mainApi.get('/products', {params})
+    return data
+}
 
-    fetchProducts: async (params) => {
-        set({ isLoading: true, error: null })
+const fetchProductById = async (id) => {
+    const {data} = await $mainApi.get(`/products/${id}`)
+    return data
+}
 
-        try {
-            const {data} = await $mainApi.get(`/products`, {params})
-            set({ products: data })
-        }
-        catch (e) {
-            set({ error: e.message })
-        }
-        finally {
-            set({ isLoading: false })
-        }
+export const useProductSearch = () => {
+    const queryClient = useQueryClient()
+    const searchQuery = useQuery({
+        queryKey: SEARCH_QUERY_KEY,
+        queryFn: () => '',
+        initialData: '',
+        staleTime: Infinity,
+    })
+
+    const setSearch = (text) => {
+        queryClient.setQueryData(SEARCH_QUERY_KEY, text)
     }
 
-}))
+    return {
+        search: searchQuery.data || '',
+        setSearch,
+    }
+}
+
+export const useProducts = (search) => {
+    const productsQuery = useQuery({
+        queryKey: PRODUCTS_QUERY_KEY(search),
+        queryFn: () => fetchProducts(search),
+    })
+
+    return {
+        products: productsQuery.data || [],
+        isLoading: productsQuery.isLoading,
+        error: productsQuery.error?.message || null,
+        refetch: productsQuery.refetch,
+    }
+}
+
+export const useProductById = (id) => {
+    return useQuery({
+        queryKey: PRODUCT_QUERY_KEY(id),
+        queryFn: () => fetchProductById(id),
+        enabled: Boolean(id),
+    })
+}

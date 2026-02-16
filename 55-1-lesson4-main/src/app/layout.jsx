@@ -20,7 +20,7 @@ export function Layout() {
         }
 
         checkAuth()
-    }, [])
+    }, [setUser])
 
 	return (
 		<>

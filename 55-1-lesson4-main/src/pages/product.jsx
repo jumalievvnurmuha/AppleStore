@@ -1,46 +1,23 @@
-import {useEffect, useState} from 'react'
-import {useParams} from 'react-router-dom'
+﻿import {useParams} from 'react-router-dom'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import {$mainApi} from '../api/requester.js'
 import {ShoppingCart} from 'lucide-react'
 import {useBasket} from '../store/use-basket'
+import {useProductById} from '../store/use-products.js'
+import {useAuth} from '../store/use-auth'
 
 export function Product() {
     const {id} = useParams()
-    const [product, setProduct] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState(null)
-    const addToBasket = useBasket((state) => state.addToBasket)
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            setIsLoading(true)
-            setError(null)
-
-            try {
-                const {data} = await $mainApi.get(`/products/${id}`)
-                setProduct(data)
-            }
-            catch (e) {
-                setError(e.message)
-            }
-            finally {
-                setIsLoading(false)
-            }
-        }
-
-        if (id) {
-            fetchProduct()
-        }
-    }, [id])
+    const isAuth = useAuth((state) => state.isAuth)
+    const addToBasket = useBasket().addToBasket
+    const {data: product, isLoading, error} = useProductById(id)
 
     if (isLoading) {
         return <div>LOADING...</div>
     }
 
     if (error) {
-        return <div>{error}</div>
+        return <div>{error.message || error}</div>
     }
 
     if (!product) {
@@ -70,13 +47,15 @@ export function Product() {
                     <Button variant='secondary' onClick={() => window.history.back()}>
                         Back
                     </Button>
-                    <Button
-                        variant='outline-primary'
-                        onClick={handleAddToBasket}
-                        aria-label='Добавить в корзину'
-                    >
-                        <ShoppingCart size={18} />
-                    </Button>
+                    {isAuth && (
+                        <Button
+                            variant='outline-primary'
+                            onClick={handleAddToBasket}
+                            aria-label='Р”РѕР±Р°РІРёС‚СЊ РІ РєРѕСЂР·РёРЅСѓ'
+                        >
+                            <ShoppingCart size={18} />
+                        </Button>
+                    )}
                 </div>
             </Card.Body>
         </Card>

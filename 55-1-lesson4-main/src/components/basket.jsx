@@ -1,16 +1,9 @@
-import {useEffect} from 'react'
-import {Offcanvas, Button} from 'react-bootstrap'
+﻿import {Offcanvas, Button} from 'react-bootstrap'
 import {useBasket} from '../store/use-basket'
 import {Trash2} from 'lucide-react'
 
 export function Basket({show, handleClose, ...props}) {
-    const {list, isLoading, error, fetchBasket, removeFromBasket} = useBasket()
-
-    useEffect(() => {
-        if (show) {
-            fetchBasket()
-        }
-    }, [show, fetchBasket])
+    const {list, isLoading, error, removeFromBasket} = useBasket({enabled: show})
 
     return (
         <Offcanvas show={show} onHide={handleClose} {...props}>
@@ -20,7 +13,7 @@ export function Basket({show, handleClose, ...props}) {
             <Offcanvas.Body>
                 {isLoading && <div>Loading...</div>}
                 {error && <div>{error}</div>}
-                {!isLoading && !error && list.length === 0 && <div>Корзина пуста</div>}
+                {!isLoading && !error && list.length === 0 && <div>Заполните корзину</div>}
 
                 {!isLoading && !error && list.map((item) => (
                     <div key={item.id} className='d-flex align-items-center justify-content-between border-bottom py-2'>
@@ -41,7 +34,7 @@ export function Basket({show, handleClose, ...props}) {
                             variant='outline-danger'
                             size='sm'
                             onClick={() => removeFromBasket(item.id)}
-                            aria-label='Удалить из корзины'
+                            aria-label='РЈРґР°Р»РёС‚СЊ РёР· РєРѕСЂР·РёРЅС‹'
                         >
                             <Trash2 size={16} />
                         </Button>

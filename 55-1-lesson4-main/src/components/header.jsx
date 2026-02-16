@@ -1,7 +1,7 @@
-import {useAuth} from '../store/use-auth'
+﻿import {useAuth} from '../store/use-auth'
 import {Button} from 'react-bootstrap'
 import {useNavigate, useLocation} from 'react-router-dom'
-import {useProducts} from '../store/use-products.js'
+import {useProductSearch} from '../store/use-products.js'
 import {ShoppingCart, User} from 'lucide-react'
 import { useState } from 'react'
 import {Basket} from './basket.jsx'
@@ -15,7 +15,7 @@ export function Header() {
 
     const location = useLocation()
 
-    const {search, setSearch} = useProducts()
+    const {search, setSearch} = useProductSearch()
 
     const navigate = useNavigate()
 
@@ -48,7 +48,7 @@ export function Header() {
 
             {isAuth && (<Button className='d-flex align-items-center gap-1' onClick={() => setShowBasket(true)}>
                     <ShoppingCart size={20} />
-                    Корзина
+                    Войти
                 </Button>)}
             </div>
 

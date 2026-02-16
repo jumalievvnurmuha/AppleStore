@@ -1,12 +1,14 @@
-import Button from 'react-bootstrap/Button'
+﻿import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import {useNavigate} from 'react-router-dom'
 import {ShoppingCart} from 'lucide-react'
 import {useBasket} from '../store/use-basket'
+import {useAuth} from '../store/use-auth'
 
 export function ProductCard({id, name, price, year, picture, description}) {
     const navigate = useNavigate()
-    const addToBasket = useBasket((state) => state.addToBasket)
+    const isAuth = useAuth((state) => state.isAuth)
+    const addToBasket = useBasket().addToBasket
 
     const handleDetailsClick = () => {
         navigate(`/products/${id}`)
@@ -35,13 +37,15 @@ export function ProductCard({id, name, price, year, picture, description}) {
                     <Button variant='primary' onClick={handleDetailsClick}>
                         Подробнее
                     </Button>
-                    <Button
-                        variant='outline-primary'
-                        onClick={handleAddToBasket}
-                        aria-label='Добавить в корзину'
-                    >
-                        <ShoppingCart size={18} />
-                    </Button>
+                    {isAuth && (
+                        <Button
+                            variant='outline-primary'
+                            onClick={handleAddToBasket}
+                            aria-label='Добавить в корзину'
+                        >
+                            <ShoppingCart size={18} />
+                        </Button>
+                    )}
                 </div>
             </Card.Body>
         </Card>

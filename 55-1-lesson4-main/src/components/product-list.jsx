@@ -1,19 +1,11 @@
-import {ProductCard} from './product-card.jsx'
-import {useProducts} from '../store/use-products.js'
-import {useEffect} from 'react'
-import { useDebounce } from '../hooks/usw-debounce.js'
+﻿import {ProductCard} from './product-card.jsx'
+import {useProductSearch, useProducts} from '../store/use-products.js'
+import {useDebounce } from '../hooks/usw-debounce.js'
 
 export function ProductList() {
-    const { products, isLoading, error, fetchProducts, search } = useProducts()
-
-
+    const { search } = useProductSearch()
     const debouncedSearch = useDebounce(search, 500)
-
-    useEffect(() => {
-        fetchProducts({
-            name: `*${debouncedSearch}`
-        })
-    }, [debouncedSearch])
+    const { products, isLoading, error } = useProducts(debouncedSearch)
 
     if (isLoading) {
         return <div>LOADING...</div>
